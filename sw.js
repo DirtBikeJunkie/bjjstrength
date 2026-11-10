@@ -4,7 +4,7 @@
  * everything. Bump CACHE whenever you edit any of it — the old cache is deleted
  * on activate, which is what makes a deploy actually reach the phone.
  */
-const CACHE = "bjj-v3";
+const CACHE = "bjj-v4";
 
 const SHELL = [
   "./",

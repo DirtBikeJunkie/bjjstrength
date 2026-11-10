@@ -29,7 +29,12 @@ It was built in claude.ai and published as a Claude artifact. This handoff moves
 
 ## Architecture notes
 
-- **Routing**: hash-based. `#day1`, `#day2`, `#flows`, `#progress`. `fromHash()` reads it; `render()` switches views by toggling `flows` / `progress` classes on `<body>`. Elements with `.workout-only` hide on the non-workout tabs.
+- **Routing**: hash-based. Three tabs: `#home` (default; Today card plus the full progress
+  dashboard), `#workout` (Day 1 / Day 2 segmented switcher, remembered in `state.day`),
+  `#flows`. `#day1` / `#day2` open Workout with that day selected; `#progress` falls
+  through to Home. `fromHash()` reads it; `render()` toggles `home` / `flows` classes on
+  `<body>`. `.workout-only` hides off the Workout tab, `.home-only` shows only on Home,
+  `.belt-area` shows on Home and Workout.
 - **Data**: `PLAN` (exercises per day), `FLOWS` (flowchart data), `ANIMS` (per-exercise animation definitions), `BELTS` (belt colors).
 - **Animations**: a tiny forward-kinematics stick figure. Each entry in `ANIMS` gives two poses (`a`, `b`) as joint angles (`hx, hy` hip position; `t` torso; `ua, fa` arm; `th, sn` leg; `nk` neck; `rel` makes arm angles relative to torso). `lerp: true` interpolates joint positions instead of angles — use it whenever a planted foot would otherwise sink through the floor line mid-rep, which happens because the hip height lerps linearly but the leg's vertical extent doesn't (goblet squat and suitcase deadlift both need it). Some entries use a custom `draw(k)` instead (front views: halo, windmill). `eq(J, k)` and `top(J, k)` both receive the interpolation factor, which is how the bell swings from hanging to racked during the clean and the press. One `requestAnimationFrame` loop drives all figures; respects `prefers-reduced-motion` (starts paused).
 - **The kettlebell** is drawn by `bell(p, a, s)`: a filled circle offset from point `p` in direction `a` (0 = straight down) with two handle lines back to `p`. `held` puts it in line with the forearm, `hang` straight down from the hand. Pointing it at `180` draws it bottoms-up.

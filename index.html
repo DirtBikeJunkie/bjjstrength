@@ -60,7 +60,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Barlow,sys
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 /* Bottom padding clears the tab bar, and on workout tabs the floating timer too. */
 .wrap{max-width:640px;margin:0 auto;padding:20px 16px calc(var(--bar-h) + 60px + 24px + env(safe-area-inset-bottom,0px))}
-body.flows .wrap,body.progress .wrap{padding-bottom:calc(var(--bar-h) + 24px + env(safe-area-inset-bottom,0px))}
+body.flows .wrap,body.home .wrap{padding-bottom:calc(var(--bar-h) + 24px + env(safe-area-inset-bottom,0px))}
 h1{font:800 clamp(2rem,8vw,3rem)/0.95 "Barlow Condensed","Arial Narrow",sans-serif;margin:6px 0 6px;letter-spacing:-0.01em}
 .sub{color:var(--muted);margin:0 0 18px;font-size:.95rem}
 .vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
@@ -88,7 +88,6 @@ h1{font:800 clamp(2rem,8vw,3rem)/0.95 "Barlow Condensed","Arial Narrow",sans-ser
 .belt .stripe.on{opacity:1}
 .beltmeta{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.9rem;margin:6px 0 20px}
 
-.dayhead{font:600 1.05rem/1.3 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
 .finish{display:block;width:100%;border:none;background:var(--mat);color:var(--done-ink);border-radius:14px;padding:16px;font:700 1.05rem Barlow,sans-serif;cursor:pointer;margin:4px 0 8px;box-shadow:0 6px 16px color-mix(in srgb,var(--mat) 35%,transparent);transition:transform .12s}
 .finish:active{transform:scale(.98)}
 .saved{color:var(--mat);font-weight:600;min-height:1.4em;margin:0 0 10px}
@@ -122,12 +121,24 @@ h1{font:800 clamp(2rem,8vw,3rem)/0.95 "Barlow Condensed","Arial Narrow",sans-ser
 :root{--go:#3CC9B5;--act:#7DB3F5;--key:#F39BDA;--dec:#F7E58A;--node-ink:#10202A;--tone-a:#F8CACA;--tone-b:#BDF0C4;--tone-c:#EBDDF3}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--go:#2FAE9C;--act:#6A9FDF;--key:#D985C4;--dec:#DCCB6E;--node-ink:#0B141A;--tone-a:#D9A3A3;--tone-b:#93CE9C;--tone-c:#C5B3D1}}
 :root[data-theme="dark"]{--go:#2FAE9C;--act:#6A9FDF;--key:#D985C4;--dec:#DCCB6E;--node-ink:#0B141A;--tone-a:#D9A3A3;--tone-b:#93CE9C;--tone-c:#C5B3D1}
-body.flows .workout-only{display:none}
+body.flows .workout-only,body.home .workout-only{display:none}
+body.flows .belt-area{display:none}
 #flows{display:none}
 body.flows #flows{display:block}
-body.progress .workout-only{display:none}
-#progress{display:none}
-body.progress #progress{display:block}
+.home-only{display:none}
+body.home .home-only{display:block}
+.hsec{font:600 1.1rem/1.3 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+.today{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.today .eyebrow{margin:0 0 2px;color:var(--mat);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
+.today h2{font:800 2rem/1 "Barlow Condensed","Arial Narrow",sans-serif;margin:0}
+.today .why{margin:4px 0 14px}
+.today .finish{margin:0}
+.dayseg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--hairline);border-radius:14px;box-shadow:var(--shadow);margin-bottom:16px}
+.dayopt{appearance:none;border:none;background:none;color:var(--muted);border-radius:11px;padding:10px 8px;text-align:center;cursor:pointer;font:inherit;transition:background .15s,color .15s}
+.dayopt b{display:block;font:700 1.1rem/1.1 "Barlow Condensed","Arial Narrow",sans-serif}
+.dayopt span{display:block;font-size:.74rem;line-height:1.25;margin-top:3px}
+.dayopt[aria-selected="true"]{background:var(--mat-soft);color:var(--ink)}
+.dayopt[aria-selected="true"] b{color:var(--mat)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--muted);margin-bottom:14px}
 .legend span{display:flex;align-items:center;gap:6px}
 .legend i{width:16px;height:12px;display:inline-block;border-radius:3px}
@@ -173,7 +184,7 @@ body.progress #progress{display:block}
 @media (prefers-reduced-motion:reduce){.outs .node{transition:none}}
 
 /* Bottom tab bar */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(4,1fr);padding:0 0 env(safe-area-inset-bottom,0px);background:var(--glass);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(3,1fr);padding:0 0 env(safe-area-inset-bottom,0px);background:var(--glass);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tabbar{border-top-color:var(--hairline)}}
 :root[data-theme="dark"] .tabbar{border-top-color:var(--hairline)}
 .tab{position:relative;appearance:none;border:none;background:none;color:var(--muted);min-height:var(--bar-h);padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font:inherit;transition:color .15s}
@@ -245,23 +256,31 @@ button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{o
   <h1>BJJ Kettlebell Plan</h1>
   <p class="sub" id="sub">Two kettlebell days a week, one bell. Watch each figure to see the movement (tap it to pause), and tap a circle when you finish a set.</p>
 
-  <div class="belt workout-only" id="belt" role="img" aria-label="White belt, 1 stripe">
+  <div class="belt belt-area" id="belt" role="img" aria-label="White belt, 1 stripe">
     <div class="stitch"></div>
     <div class="fill" id="fill"></div>
     <div class="bar"><i class="stripe"></i><i class="stripe"></i><i class="stripe"></i><i class="stripe"></i></div>
   </div>
-  <div class="beltmeta workout-only"><span id="count">0 of 0 sets</span><button class="beltedit" id="beltedit" aria-expanded="false" aria-controls="beltpanel">Edit belt</button></div>
-  <div class="beltpanel workout-only" id="beltpanel" hidden>
+  <div class="beltmeta belt-area"><span id="count">0 of 0 sets</span><button class="beltedit" id="beltedit" aria-expanded="false" aria-controls="beltpanel">Edit belt</button></div>
+  <div class="beltpanel belt-area" id="beltpanel" hidden>
     <div class="belt-colors" id="beltcolors" role="group" aria-label="Belt color"></div>
     <div class="stripe-step"><span>Stripes</span><button id="sminus" aria-label="Remove a stripe">−</button><b id="snum">1</b><button id="splus" aria-label="Add a stripe">+</button></div>
   </div>
 
-  <p class="dayhead workout-only" id="dayhead"></p>
+  <section id="home" class="home-only" aria-label="Home">
+    <div id="today"></div>
+    <h2 class="hsec">Progress</h2>
+    <section id="progress" aria-label="Progress"></section>
+  </section>
+
+  <div class="dayseg workout-only" role="tablist" aria-label="Workout day">
+    <button class="dayopt" role="tab" data-day="day1"><b>Day 1</b><span>Swing, pull, grip · Tue/Sat</span></button>
+    <button class="dayopt" role="tab" data-day="day2"><b>Day 2</b><span>Get-up, press, hips · Thu/Sun</span></button>
+  </div>
   <p class="warm workout-only"><strong>Warm up first:</strong> 5–10 minutes of easy movement, some hip and shoulder mobility, then two light sets of swings.</p>
 
   <section id="list" class="workout-only"></section>
   <section id="flows" aria-label="Game plan"></section>
-  <section id="progress" aria-label="Progress"></section>
 
   <div class="tips workout-only">
     <button class="finish" id="finish">Finish workout</button>
@@ -284,10 +303,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{o
 </div>
 
 <nav class="tabbar" role="tablist" aria-label="Sections">
-  <button class="tab" role="tab" data-day="day1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M8.2 7.5h7.6a1 1 0 0 1 .9.6 7 7 0 1 1-9.4 0 1 1 0 0 1 .9-.6Z"/></svg><b>Day 1</b><span class="vh">Swing, pull, grip, Tue/Sat</span></button>
-  <button class="tab" role="tab" data-day="day2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M8.2 7.5h7.6a1 1 0 0 1 .9.6 7 7 0 1 1-9.4 0 1 1 0 0 1 .9-.6Z"/><path d="M12 11v5"/></svg><b>Day 2</b><span class="vh">Get-up, press, hips, Thu/Sun</span></button>
-  <button class="tab" role="tab" data-day="flows"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/><path d="M12 7v4M12 11l-6 6M12 11l6 6"/></svg><b>Game plan</b><span class="vh">Your flowcharts</span></button>
-  <button class="tab" role="tab" data-day="progress"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16v-5M12 16V7M17 16v-3"/></svg><b>Progress</b><span class="vh">Your history</span></button>
+  <button class="tab" role="tab" data-view="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16v-5M12 16V7M17 16v-3"/></svg><b>Home</b><span class="vh">Your history</span></button>
+  <button class="tab" role="tab" data-view="workout"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M8.2 7.5h7.6a1 1 0 0 1 .9.6 7 7 0 1 1-9.4 0 1 1 0 0 1 .9-.6Z"/></svg><b>Workout</b><span class="vh">Day 1 and Day 2</span></button>
+  <button class="tab" role="tab" data-view="flows"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/><path d="M12 7v4M12 11l-6 6M12 11l6 6"/></svg><b>Game plan</b><span class="vh">Your flowcharts</span></button>
 </nav>
 
 <script>
@@ -317,9 +335,16 @@ let state = {};
 try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { state = {}; }
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} };
 
-const VIEWS = ["day1", "day2", "flows", "progress"];
-const fromHash = () => VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "day1";
-let day = fromHash();
+/* `view` is the tab (home / workout / flows); `day` is the workout day shown inside
+   the Workout tab and is remembered. Old #day1 / #day2 / #progress links still work. */
+let day = state.day === "day2" ? "day2" : "day1";
+function fromHash(){
+  const h = location.hash.slice(1);
+  if (h === "day1" || h === "day2") { day = h; state.day = h; save(); return "workout"; }
+  if (h === "workout" || h === "flows") return h;
+  return "home";
+}
+let view = fromHash();
 const WORK_SUB = "Two kettlebell days a week, one bell. Watch each figure to see the movement (tap it to pause), and tap a circle when you finish a set.";
 const FLOW_SUB = "Your flowcharts from the mat. Pick a position to review before class.";
 const PROG_SUB = "Every finished workout is saved on this phone. Here’s how you’re trending.";
@@ -330,7 +355,7 @@ const fmtDate = t => new Date(t).toLocaleDateString(undefined, {month:"short", d
 const weekStart = t => { const d = new Date(t); d.setHours(0,0,0,0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getTime(); };
 const weeksAgo = t => Math.round((weekStart(Date.now()) - weekStart(t)) / (7 * DAY_MS));
 const DAY_NAME = {day1:"Day 1", day2:"Day 2"};
-/* Same words as the tab subtitles, shown on-page now that the tab bar is too small for them. */
+/* Title — subtitle for each day; the Today card splits on the dash. */
 const DAY_HEAD = {day1:"Day 1 — Swing, pull, grip · Tue/Sat", day2:"Day 2 — Get-up, press, hips · Thu/Sun"};
 
 function weeklyChart(H){
@@ -482,17 +507,40 @@ function renderFlows(){
   });
 }
 
+/* Which day the schedule points at today; otherwise whichever you did least recently. */
+function suggestDay(){
+  const wd = new Date().getDay();
+  if (wd === 2 || wd === 6) return "day1";
+  if (wd === 4 || wd === 0) return "day2";
+  const last = (state.history || []).slice().sort((a, b) => b.t - a.t)[0];
+  return last && last.day === "day1" ? "day2" : "day1";
+}
+function renderToday(){
+  const d = suggestDay();
+  const total = PLAN[d].reduce((a, e) => a + e.sets, 0);
+  const done = PLAN[d].reduce((a, e, i) => a + Math.min((state[d + "-" + i]?.done.length) || 0, e.sets), 0);
+  const weekday = new Date().toLocaleDateString(undefined, {weekday:"long"});
+  const [title, sub] = DAY_HEAD[d].split(" — ");
+  document.getElementById("today").innerHTML = `
+    <div class="today">
+      <p class="eyebrow">Today · ${weekday}</p>
+      <h2>${title}</h2>
+      <p class="why">${sub}</p>
+      <button class="finish start" data-day="${d}">${done ? `Continue workout · ${done} of ${total} sets` : "Start workout"}</button>
+    </div>`;
+  document.querySelector(".start").onclick = () => { location.hash = d; };
+}
 function render(){
-  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.day === day));
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.view === view));
+  document.querySelectorAll(".dayopt").forEach(b => b.setAttribute("aria-selected", b.dataset.day === day));
   const list = document.getElementById("list");
   list.innerHTML = "";
   figs.length = 0;
-  document.body.classList.toggle("flows", day === "flows");
-  document.body.classList.toggle("progress", day === "progress");
-  document.getElementById("sub").textContent = day === "flows" ? FLOW_SUB : day === "progress" ? PROG_SUB : WORK_SUB;
-  document.getElementById("dayhead").textContent = DAY_HEAD[day] || "";
-  if (day === "flows") { renderFlows(); return; }
-  if (day === "progress") { renderProgress(); return; }
+  document.body.classList.toggle("flows", view === "flows");
+  document.body.classList.toggle("home", view === "home");
+  document.getElementById("sub").textContent = view === "flows" ? FLOW_SUB : view === "home" ? PROG_SUB : WORK_SUB;
+  if (view === "flows") { renderFlows(); return; }
+  if (view === "home") { renderToday(); renderProgress(); updateBelt(); return; }
   PLAN[day].forEach((ex, i) => {
     const id = day + "-" + i;
     const s = state[id] || (state[id] = {done:[], w:""});
@@ -577,8 +625,9 @@ document.getElementById("beltedit").onclick = e => {
 document.getElementById("sminus").onclick = () => { state.rank.stripes = Math.max(0, state.rank.stripes - 1); save(); paintBelt(); };
 document.getElementById("splus").onclick = () => { state.rank.stripes = Math.min(4, state.rank.stripes + 1); save(); paintBelt(); };
 
-document.querySelectorAll(".tab").forEach(t => t.onclick = () => { day = t.dataset.day; location.hash = day; render(); });
-window.addEventListener("hashchange", () => { day = fromHash(); render(); });
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => { location.hash = t.dataset.view; });
+document.querySelectorAll(".dayopt").forEach(b => b.onclick = () => { location.hash = b.dataset.day; });
+window.addEventListener("hashchange", () => { view = fromHash(); render(); });
 document.getElementById("finish").onclick = () => {
   const msg = document.getElementById("saved");
   const ex = PLAN[day].map((e, i) => {
