@@ -275,7 +275,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{o
 
   <div class="dayseg workout-only" role="tablist" aria-label="Workout day">
     <button class="dayopt" role="tab" data-day="day1"><b>Day 1</b><span>Swing, pull, grip · Tue/Sat</span></button>
-    <button class="dayopt" role="tab" data-day="day2"><b>Day 2</b><span>Get-up, press, hips · Thu/Sun</span></button>
+    <button class="dayopt" role="tab" data-day="day2"><b>Day 2</b><span>Get-up, pull, hips · Thu/Sun</span></button>
   </div>
   <p class="warm workout-only"><strong>Warm up first:</strong> 5–10 minutes of easy movement, some hip and shoulder mobility, then two light sets of swings.</p>
 
@@ -313,19 +313,19 @@ const PLAN = {
   day1: [
     {name:"Two-hand swing", sets:5, reps:"15", why:"Hip power for bridging, sweeps and scrambles.", cue:"Hike the bell back past your hips, then snap your hips forward. Your arms stay relaxed — the bell floats, you don’t lift it."},
     {name:"Goblet squat", sets:3, reps:"10", why:"Leg drive for standing up and passing.", cue:"Hold the horns at your chest. Sit down between your heels with your elbows inside your knees and your chest tall."},
-    {name:"Single-arm row", sets:3, reps:"10 / side", why:"Pulling strength for grips and guard.", cue:"Hinge until your back is flat. Pull the bell to your hip, not your chest, and don’t let your shoulders twist."},
+    {name:"Single-arm row", sets:4, reps:"10 / side", why:"Pulling strength for grips and guard.", cue:"Hinge until your back is flat. Pull the bell to your hip, not your chest, and don’t let your shoulders twist."},
+    {name:"Gorilla row", sets:3, reps:"8 / side", why:"Big lat and grip strength for breaking posture and dragging them into you.", cue:"Wide stance, bell between your feet. Hinge until your back is flat, pull the bell to your hip and let your torso turn a little toward it. Switch hands each rep."},
     {name:"Suitcase deadlift", sets:3, reps:"8 / side", why:"Hinge strength plus a core that resists being bent sideways.", cue:"Bell beside your foot. Stand up without letting your shoulders tilt toward it."},
     {name:"Kettlebell clean", sets:3, reps:"6 / side", why:"Explosive pull — the same action as standing up in a scramble.", cue:"Same hike as a swing, then guide the bell around your fist into the rack. Punch through so it doesn’t bang your wrist."},
-    {name:"Suitcase carry", sets:3, reps:"40 steps", why:"Grip endurance and an anti-lean core, like carrying someone’s weight.", cue:"One bell, one side. Walk tall and level, and switch hands each set."},
-    {name:"Bottoms-up hold", sets:3, reps:"20 sec / side", why:"Crushing grip and shoulder stability.", cue:"Bell upside down in the rack, handle squeezed hard. Start lighter than you think."}
+    {name:"Suitcase carry", sets:3, reps:"40 steps", why:"Grip endurance and an anti-lean core, like carrying someone’s weight.", cue:"One bell, one side. Walk tall and level, and switch hands each set."}
   ],
   day2: [
-    {name:"Turkish get-up", sets:3, reps:"2 / side", why:"Standing up with weight on you — bridges, hip escapes and posting in one lift.", cue:"Roll to your elbow, then your hand, sweep the leg through, lunge up. Eyes on the bell the whole way."},
-    {name:"Half-kneeling press", sets:3, reps:"8 / side", why:"Framing and posting strength overhead.", cue:"Back knee down, ribs down. Press straight up without arching your lower back."},
-    {name:"Kettlebell halo", sets:2, reps:"8 / side", why:"Shoulder and neck mobility for bridging and posture.", cue:"Circle the bell close around your head, slowly. Keep your ribs down and don’t lean away from it."},
+    {name:"Turkish get-up", sets:2, reps:"2 / side", why:"Standing up with weight on you — bridges, hip escapes and posting in one lift.", cue:"Roll to your elbow, then your hand, sweep the leg through, lunge up. Eyes on the bell the whole way."},
+    {name:"Half-kneeling press", sets:2, reps:"8 / side", why:"Framing and posting strength overhead. Kept light on purpose — you pull more than you push.", cue:"Back knee down, ribs down. Press straight up without arching your lower back."},
+    {name:"Rear delt row", sets:3, reps:"12 / side", why:"Rear shoulders and upper back — the muscles that hold your posture when they pull on you.", cue:"Hinge forward, elbow out wide. Lift the bell toward your upper chest, squeeze between your shoulder blades, lower slowly. Light bell, strict form."},
+    {name:"Kettlebell pullover", sets:3, reps:"10", why:"Lats that stop them from breaking your posture, plus a stretch across the chest.", cue:"Lie on the floor, knees bent, bell held by the horns over your chest with straight arms. Lower it behind your head until it almost touches the floor, then pull it back over your chest with your lats."},
     {name:"Single-leg deadlift", sets:3, reps:"8 / side", why:"Base and balance when they attack the leg you’re standing on.", cue:"Hinge over the standing leg with your back leg straight behind you. Keep your hips square to the floor."},
     {name:"Single-arm swing", sets:3, reps:"10 / side", why:"Hip power plus a grip that has to hold on.", cue:"Same as the two-hand swing. Let the handle rotate in your hand and keep your shoulder packed."},
-    {name:"Windmill", sets:2, reps:"5 / side", why:"Opens the hips and shoulders you use to escape.", cue:"Bell locked out overhead, eyes on it. Push your hip out and slide your free hand down the inside of your leg."},
     {name:"Neck work", sets:2, reps:"10", why:"Helps prevent neck injuries.", cue:"Gentle neck bridges or light neck harness work. No kettlebell needed — start very light."}
   ]
 };
@@ -356,7 +356,7 @@ const weekStart = t => { const d = new Date(t); d.setHours(0,0,0,0); d.setDate(d
 const weeksAgo = t => Math.round((weekStart(Date.now()) - weekStart(t)) / (7 * DAY_MS));
 const DAY_NAME = {day1:"Day 1", day2:"Day 2"};
 /* Title — subtitle for each day; the Today card splits on the dash. */
-const DAY_HEAD = {day1:"Day 1 — Swing, pull, grip · Tue/Sat", day2:"Day 2 — Get-up, press, hips · Thu/Sun"};
+const DAY_HEAD = {day1:"Day 1 — Swing, pull, grip · Tue/Sat", day2:"Day 2 — Get-up, pull, hips · Thu/Sun"};
 
 function weeklyChart(H){
   const counts = Array(12).fill(0);
@@ -728,6 +728,9 @@ const ANIMS = {
   "Single-arm row": { lerp:true,
     a:{hx:84,hy:107,t:130,ua:5,fa:5,th:10,sn:-10}, b:{ua:-50,fa:60},
     eq: () => floor(172), top: hang },
+  "Gorilla row": { lerp:true,
+    a:{hx:88,hy:107,t:118,ua:15,fa:15,th:14,sn:-14}, b:{ua:-40,fa:70},
+    eq: () => floor(172) + T(8,22,"Bell between your feet"), top: hang },
   "Suitcase deadlift": { lerp:true,
     a:{hx:100,hy:106,t:180,ua:0,fa:0,th:2,sn:-2}, b:{hx:88,hy:115,t:135,th:30,sn:-30},
     eq: () => floor(172), top: hang },
@@ -738,10 +741,6 @@ const ANIMS = {
   "Suitcase carry": {
     a:{hx:100,hy:108,t:178,ua:0,fa:0,th:28,sn:-26}, b:{th:-20,sn:-8},
     eq: () => floor(172), top: hang },
-  "Bottoms-up hold": {
-    a:{hx:100,hy:106,t:180,ua:8,fa:172,th:2,sn:-2}, b:{fa:188},
-    eq: () => floor(172) + T(8,22,"Handle upright, squeeze hard"),
-    top: (J,k) => bell(J.hand, mix(174,186,k), 0.95) + grip(J) },
 
   /* Day 2 */
   "Turkish get-up": { lerp:true,
@@ -752,29 +751,19 @@ const ANIMS = {
     a:{hx:94,hy:140,t:180,ua:5,fa:174,th:90,sn:0}, b:{ua:180,fa:180},
     eq: J => L(J.hip,[80,168]) + L([80,168],[62,170]) + floor(172) + T(8,22,"Back knee down"),
     top: (J,k) => bell(J.hand, mix(215,180,k), 0.95) + grip(J) },
-  "Kettlebell halo": { draw: k => {
-    const cx = 100, cy = 60, R = 28, a = k * 360;
-    const h = [cx + Math.sin(rad(a)) * R, cy - Math.cos(rad(a)) * R];
-    const sL = [82,86], sR = [118,86];
-    return floor(172) + L([90,112],[84,144]) + L([84,144],[80,172]) + L([110,112],[116,144]) + L([116,144],[120,172])
-      + L([90,112],[110,112]) + L([100,112],[100,86]) + L(sL,sR) + L(sL,h) + L(sR,h)
-      + C([cx,cy],12,"head") + bell(h, 180 - a, 0.85) + C(h,5,"grip") + T(6,166,"Front view"); } },
+  "Rear delt row": { lerp:true,
+    a:{hx:86,hy:108,t:120,ua:0,fa:0,th:8,sn:-8}, b:{ua:-80,fa:30},
+    eq: () => floor(172) + T(8,22,"Elbow out wide"), top: hang },
+  "Kettlebell pullover": {
+    a:{hx:66,hy:158,t:90,ua:180,fa:180,th:240,sn:340}, b:{ua:120,fa:120},
+    eq: () => floor(172) + T(8,22,"On your back, arms straight"),
+    top: held },
   "Single-leg deadlift": {
     a:{hx:100,hy:106,t:178,ua:0,fa:0,th:2,sn:-2}, b:{hx:92,t:120,th:8,sn:-8},
     eq: (J,k) => { const kn2 = P(J.hip, mix(355,255,k), 34), ft2 = P(kn2, mix(5,250,k), 32);
       return floor(172) + L(J.hip,kn2) + L(kn2,ft2); },
     top: hang },
   "Single-arm swing": Object.assign({}, SWING, { eq: () => floor(172) }),
-  "Windmill": { draw: k => {
-    const lean = rad(mix(2, 42, k)), S = [100 - Math.sin(lean) * 42, 120 - Math.cos(lean) * 42];
-    const perp = [Math.cos(lean) * 18, -Math.sin(lean) * 18];
-    const sR = [S[0] + perp[0], S[1] + perp[1]], sL = [S[0] - perp[0], S[1] - perp[1]];
-    const hi = [sR[0] + 2, sR[1] - 44];
-    const lo = [mix(sL[0] - 6, 74, k), mix(sL[1] + 54, 164, k)];
-    const head = [S[0] - Math.sin(lean) * 15, S[1] - Math.cos(lean) * 15];
-    return floor(172) + L([92,120],[76,172]) + L([108,120],[126,172]) + L([92,120],[108,120])
-      + L([100,120],S) + L(sL,sR) + L(sR,hi) + L(sL,lo)
-      + C(head,11,"head") + bell(hi,180,0.95) + C(hi,5,"grip") + T(6,24,"Front view"); } },
   "Neck work": {
     a:{hx:96,hy:118,t:180,ua:30,fa:125,th:90,sn:0,nk:-28}, b:{nk:22},
     eq: () => L([70,128],[124,128],"pad") + L([78,132],[78,151],"eq") + L([116,132],[116,151],"eq") + floor(151) + T(8,22,"Slow, gentle nods") }
