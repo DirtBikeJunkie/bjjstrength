@@ -35,6 +35,11 @@ It was built in claude.ai and published as a Claude artifact. This handoff moves
 - **The kettlebell** is drawn by `bell(p, a, s)`: a filled circle offset from point `p` in direction `a` (0 = straight down) with two handle lines back to `p`. `held` puts it in line with the forearm, `hang` straight down from the hand. Pointing it at `180` draws it bottoms-up.
 - `/tmp/figcheck.js` (not checked in, easy to recreate) renders every `ANIMS` entry across `k` and prints bounding boxes — worth rerunning after pose edits to catch figures that clip the 200×180 viewBox.
 - **Charts**: hand-written inline SVG (`weeklyChart`, `weightChart`). No chart library.
+- **Layout**: the four tabs are a fixed bottom tab bar (`.tabbar`, outside `<main>`); each
+  tab keeps its subtitle text in a visually-hidden `.vh` span for screen readers, and the
+  same words show on-page in `#dayhead` above the warm-up note. The rest timer is a
+  floating pill above the bar. `.wrap` bottom padding is sized for both, so change
+  `--bar-h` if the bar height changes.
 - **Theming**: CSS custom properties on `:root`, with dark-mode overrides under `prefers-color-scheme` and `[data-theme]`. Fonts: Barlow + Barlow Condensed from Google Fonts with system fallbacks.
 - **Safe areas**: uses `viewport-fit=cover` and `env(safe-area-inset-*)` padding for iPhone notches.
 
