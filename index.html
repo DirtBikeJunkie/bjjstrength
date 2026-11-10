@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BJJ Kettlebell Plan</title>
+<meta name="theme-color" content="#EEF1F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14181D" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="BJJ Plan">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192">
+<link rel="preload" href="fonts/barlow-condensed-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/barlow-400.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Self-hosted so the app works with no signal at the gym. Latin subset only. */
+@font-face{font-family:'Barlow';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/barlow-400.woff2) format('woff2')}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-500.woff2) format('woff2')}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-600.woff2) format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-600.woff2) format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:800;font-display:swap;src:url(fonts/barlow-condensed-800.woff2) format('woff2')}
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#1A1D21; --muted:#5B6570;
+  --line:#D5DBE1; --mat:#2E5E8C; --mat-soft:#DCE7F1; --rank:#C8102E;
+  --belt:#000000; --tape:#FFFFFF; --done:#2E5E8C; --done-ink:#FFFFFF;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14181D; --surface:#1D232A; --ink:#E9EDF1; --muted:#9AA5B1;
+    --line:#2F3842; --mat:#6FA3D6; --mat-soft:#233445; --rank:#E0485E;
+    --belt:#05070A; --tape:#F3F3F3; --done:#6FA3D6; --done-ink:#0E1620;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14181D; --surface:#1D232A; --ink:#E9EDF1; --muted:#9AA5B1;
+  --line:#2F3842; --mat:#6FA3D6; --mat-soft:#233445; --rank:#E0485E;
+  --belt:#05070A; --tape:#F3F3F3; --done:#6FA3D6; --done-ink:#0E1620;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Barlow,system-ui,-apple-system,"Segoe UI",sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 120px}
+h1{font:800 clamp(2.4rem,9vw,3.4rem)/0.95 "Barlow Condensed","Arial Narrow",sans-serif;margin:8px 0 6px;letter-spacing:-0.01em}
+.sub{color:var(--muted);margin:0 0 20px}
+
+/* The belt */
+.belt{position:relative;height:34px;border-radius:4px;background:var(--beltc,#F4F4F2);overflow:hidden;border:1px solid var(--line);--barc:#000;--stitch:#1A1D21}
+.belt .stitch{position:absolute;left:10px;right:122px;top:50%;height:3px;margin-top:-1.5px;background:repeating-linear-gradient(90deg,var(--stitch) 0 6px,transparent 6px 10px);opacity:.25}
+.belt .fill{position:absolute;left:10px;top:50%;height:3px;margin-top:-1.5px;border-radius:2px;width:0;background:var(--stitch);transition:width .35s ease}
+.belt .bar{position:absolute;right:14px;top:0;bottom:0;width:96px;background:var(--barc);display:flex;gap:6px;align-items:center;justify-content:flex-start;padding-left:10px}
+[hidden]{display:none!important}
+.beltedit{background:none;border:none;color:var(--mat);font:600 .9rem Barlow,sans-serif;cursor:pointer;padding:0}
+.beltpanel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;margin:-12px 0 22px}
+.belt-colors{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.bc{display:flex;align-items:center;gap:6px;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 12px 6px 8px;font:600 .88rem Barlow,sans-serif;cursor:pointer}
+.bc i{width:16px;height:16px;border-radius:50%;border:1px solid var(--line)}
+.bc[aria-pressed="true"]{border-color:var(--mat);background:var(--mat-soft)}
+.stripe-step{display:flex;align-items:center;gap:12px;font-weight:600}
+.stripe-step button{width:38px;height:38px;border-radius:50%;border:2px solid var(--line);background:var(--bg);color:var(--ink);font:600 1.2rem Barlow,sans-serif;cursor:pointer}
+.stripe-step b{font:800 1.5rem/1 "Barlow Condensed","Arial Narrow",sans-serif;min-width:16px;text-align:center}
+.belt .stripe{width:9px;height:100%;background:var(--tape);opacity:.15;transition:opacity .3s}
+.belt .stripe.on{opacity:1}
+.beltmeta{display:flex;justify-content:space-between;color:var(--muted);font-size:.9rem;margin:8px 0 22px}
+
+.tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:18px}
+@media (min-width:560px){.tabs{grid-template-columns:repeat(4,1fr)}}
+.finish{display:block;width:100%;border:none;background:var(--mat);color:var(--done-ink);border-radius:8px;padding:14px;font:700 1.05rem Barlow,sans-serif;cursor:pointer;margin:4px 0 6px}
+.saved{color:var(--mat);font-weight:600;min-height:1.4em;margin:0 0 10px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font:800 2rem/1 "Barlow Condensed","Arial Narrow",sans-serif}
+.stat span{color:var(--muted);font-size:.8rem;line-height:1.2;display:block;margin-top:4px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:14px}
+.pcard h2{font:600 1.4rem/1.1 "Barlow Condensed","Arial Narrow",sans-serif;margin:0 0 4px}
+.pcard .why{margin:0 0 10px}
+.pcard svg{width:100%;height:auto;display:block}
+.pcard select{width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;margin-bottom:10px}
+.pchart .bar{fill:var(--mat)}
+.pchart .bar.zero{fill:var(--line)}
+.pchart .goal{stroke:var(--rank);stroke-width:1.5;stroke-dasharray:4 4}
+.pchart .grid{stroke:var(--line);stroke-width:1}
+.pchart text{fill:var(--muted);font:500 11px Barlow,sans-serif}
+.pchart text.gl{fill:var(--rank)}
+.pchart .ln{stroke:var(--mat);stroke-width:2.5;fill:none;stroke-linejoin:round}
+.pchart .pt{fill:var(--mat)}
+.change{font-weight:600}
+.log{list-style:none;margin:0;padding:0}
+.log li{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.log li:first-child{border-top:none}
+.log .when{font-weight:600;min-width:64px}
+.log .what{color:var(--muted);font-size:.9rem;flex:1}
+.log button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:6px 10px;font:inherit;font-size:.85rem;cursor:pointer}
+.log button.armed{border-color:var(--rank);color:var(--rank)}
+.tabs .tab b{font-size:1.2rem}
+.tabs .tab span{font-size:.78rem;display:block;line-height:1.25;margin-top:2px}
+
+/* Game plan flowcharts */
+:root{--go:#3CC9B5;--act:#7DB3F5;--key:#F39BDA;--dec:#F7E58A;--node-ink:#10202A;--tone-a:#F8CACA;--tone-b:#BDF0C4;--tone-c:#EBDDF3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--go:#2FAE9C;--act:#6A9FDF;--key:#D985C4;--dec:#DCCB6E;--node-ink:#0B141A;--tone-a:#D9A3A3;--tone-b:#93CE9C;--tone-c:#C5B3D1}}
+:root[data-theme="dark"]{--go:#2FAE9C;--act:#6A9FDF;--key:#D985C4;--dec:#DCCB6E;--node-ink:#0B141A;--tone-a:#D9A3A3;--tone-b:#93CE9C;--tone-c:#C5B3D1}
+body.flows .workout-only{display:none}
+#flows{display:none}
+body.flows #flows{display:block}
+body.progress .workout-only{display:none}
+#progress{display:none}
+body.progress #progress{display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--muted);margin-bottom:14px}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:16px;height:12px;display:inline-block}
+.picker{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+.pick{flex:none;appearance:none;border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font:600 .9rem Barlow,sans-serif;cursor:pointer}
+.pick[aria-selected="true"]{border-color:var(--mat);background:var(--mat-soft)}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 12px 18px}
+.chart h2{font:600 1.6rem/1.1 "Barlow Condensed","Arial Narrow",sans-serif;margin:0 0 2px;text-align:center}
+.chart .why{text-align:center;margin:0 0 14px}
+.flow{display:flex;flex-direction:column;align-items:center}
+.node{color:var(--node-ink);padding:10px 12px;text-align:center;font-weight:600;font-size:.9rem;line-height:1.25;width:100%;max-width:240px}
+.n-start,.n-result{background:var(--go);border-radius:999px;padding:10px 16px}
+.n-act{background:var(--act);border-radius:6px}
+.n-key{background:var(--key);clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);padding:12px 20px}
+.n-dec{background:var(--dec);clip-path:polygon(0 0,100% 0,100% 72%,50% 100%,0 72%);padding:10px 12px 22px}
+.step{position:relative;padding-top:24px;display:flex;justify-content:center;width:100%}
+.step::before{content:"";position:absolute;top:3px;left:50%;height:15px;border-left:2px solid var(--muted);transform:translateX(-1px)}
+.step::after{content:"";position:absolute;top:16px;left:50%;transform:translateX(-5px);border:5px solid transparent;border-top:6px solid var(--muted);border-bottom:0}
+.flow > .step:first-child{padding-top:0}
+.flow > .step:first-child::before,.flow > .step:first-child::after{display:none}
+.via{position:relative;padding-top:20px;color:var(--rank);font-weight:600;font-size:.85rem}
+.via::before{content:"";position:absolute;top:2px;left:50%;height:16px;border-left:2px solid var(--muted)}
+.branches{display:grid;gap:10px;width:100%;position:relative;padding-top:18px}
+.branches::before{content:"";position:absolute;top:2px;left:50%;height:16px;border-left:2px solid var(--muted);transform:translateX(-1px)}
+.b2{grid-template-columns:1fr 1fr}
+.b2::after{content:"";position:absolute;top:18px;left:25%;right:25%;border-top:2px solid var(--muted)}
+.b1 .lane .step:first-child{padding-top:6px}
+.b1 .lane .step:first-child::before,.b1 .lane .step:first-child::after{display:none}
+.lane{display:flex;flex-direction:column;align-items:center;min-width:0}
+.fork{display:flex;flex-direction:column;gap:6px;width:100%}
+.opt{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:3px;color:var(--muted)}
+.opt .node{padding:9px 14px;font-size:.82rem}
+.t-a .node{background:var(--tone-a)}.t-b .node{background:var(--tone-b)}.t-c .node{background:var(--tone-c)}
+.checks{border:2px dashed var(--muted);border-radius:8px;padding:6px 8px;font-size:.82rem;width:100%;text-align:left;line-height:1.3}
+.checks .if{color:var(--rank);font-weight:600}
+.checks label{display:flex;gap:6px;align-items:flex-start;margin:6px 0;cursor:pointer}
+.checks input{width:18px;height:18px;flex:none;margin:0;accent-color:var(--mat)}
+.outs{display:flex;flex-direction:column;gap:6px;width:100%;align-items:center}
+.outs .node{transition:opacity .2s}
+.outs .dim{opacity:.3}
+.outs small{color:var(--muted);font-size:.78rem;text-align:center}
+@media (prefers-reduced-motion:reduce){.outs .node{transition:none}}
+.tab{appearance:none;border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:12px 10px;text-align:left;cursor:pointer;font:inherit}
+.tab b{display:block;font:800 1.35rem/1 "Barlow Condensed","Arial Narrow",sans-serif}
+.tab span{color:var(--muted);font-size:.85rem}
+.tab[aria-selected="true"]{border-color:var(--mat);background:var(--mat-soft)}
+
+.warm{border-left:4px solid var(--mat);padding:4px 0 4px 12px;margin:0 0 18px;color:var(--muted)}
+.warm strong{color:var(--ink)}
+
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.ex.complete{border-color:var(--mat)}
+.top{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.exhead{flex-wrap:wrap}
+.top .why{margin-bottom:0}
+.fig{width:120px;aspect-ratio:200/180;background:var(--mat-soft);border-radius:8px;display:block;cursor:pointer}
+@media (min-width:520px){.top{grid-template-columns:160px 1fr}.fig{width:160px}}
+.fig .body{stroke:var(--ink);stroke-width:6;stroke-linecap:round;fill:none}
+.fig .head{fill:var(--ink)}
+.fig .eq{stroke:var(--muted);stroke-width:3;stroke-linecap:round;fill:none}
+.fig .pad{stroke:var(--muted);stroke-width:10;stroke-linecap:round;fill:none;opacity:.7}
+.fig .eqf{fill:var(--muted)}
+.fig .cable{stroke:var(--mat);stroke-width:2.5;fill:none}
+.fig .grip{fill:var(--rank)}
+.fig .towel{stroke:var(--rank);stroke-width:4;stroke-linecap:round}
+.fig .note{fill:var(--muted);font:600 13px Barlow,sans-serif}
+.paused-tag{display:block;color:var(--muted);font-size:.8rem;margin-top:4px}
+.exhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.exhead h2{font:600 1.5rem/1.1 "Barlow Condensed","Arial Narrow",sans-serif;margin:0}
+.rx{color:var(--muted);white-space:nowrap;font-weight:500}
+.why{color:var(--muted);font-size:.92rem;margin:4px 0 12px}
+.sets{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.set{width:46px;height:46px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--ink);font:600 1rem Barlow,sans-serif;cursor:pointer}
+.set.on{background:var(--done);border-color:var(--done);color:var(--done-ink)}
+.weight{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.9rem}
+.weight input{width:72px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit}
+details{margin-top:10px}
+summary{cursor:pointer;color:var(--mat);font-weight:600}
+details p{margin:8px 0 4px}
+.how{color:var(--mat);font-weight:600}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--rank);outline-offset:2px}
+
+.tips{color:var(--muted);font-size:.92rem;margin-top:22px}
+.tips p{margin:6px 0}
+.reset{margin-top:14px;background:none;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:8px 12px;font:inherit;cursor:pointer}
+
+.timer{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);z-index:5}
+.timer .in{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.clock{font:800 1.9rem/1 "Barlow Condensed","Arial Narrow",sans-serif;min-width:70px;font-variant-numeric:tabular-nums}
+.clock.zero{color:var(--rank)}
+.tbtn{border:none;background:var(--mat);color:var(--done-ink);border-radius:6px;padding:10px 14px;font:600 .95rem Barlow,sans-serif;cursor:pointer}
+.tbtn.ghost{background:none;color:var(--muted);border:1px solid var(--line)}
+.timer label{color:var(--muted);font-size:.85rem;margin-right:auto}
+@media (prefers-reduced-motion:reduce){.belt .fill,.belt .stripe{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>BJJ Kettlebell Plan</h1>
+  <p class="sub" id="sub">Two kettlebell days a week, one bell. Watch each figure to see the movement (tap it to pause), and tap a circle when you finish a set.</p>
+
+  <div class="belt workout-only" id="belt" role="img" aria-label="White belt, 1 stripe">
+    <div class="stitch"></div>
+    <div class="fill" id="fill"></div>
+    <div class="bar"><i class="stripe"></i><i class="stripe"></i><i class="stripe"></i><i class="stripe"></i></div>
+  </div>
+  <div class="beltmeta workout-only"><span id="count">0 of 0 sets</span><button class="beltedit" id="beltedit" aria-expanded="false" aria-controls="beltpanel">Edit belt</button></div>
+  <div class="beltpanel workout-only" id="beltpanel" hidden>
+    <div class="belt-colors" id="beltcolors" role="group" aria-label="Belt color"></div>
+    <div class="stripe-step"><span>Stripes</span><button id="sminus" aria-label="Remove a stripe">−</button><b id="snum">1</b><button id="splus" aria-label="Add a stripe">+</button></div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-day="day1"><b>Day 1</b><span>Swing, pull, grip, Tue/Sat</span></button>
+    <button class="tab" role="tab" data-day="day2"><b>Day 2</b><span>Get-up, press, hips, Thu/Sun</span></button>
+    <button class="tab" role="tab" data-day="flows"><b>Game plan</b><span>Your flowcharts</span></button>
+    <button class="tab" role="tab" data-day="progress"><b>Progress</b><span>Your history</span></button>
+  </div>
+
+  <p class="warm workout-only"><strong>Warm up first:</strong> 5–10 minutes of easy movement, some hip and shoulder mobility, then two light sets of swings.</p>
+
+  <section id="list" class="workout-only"></section>
+  <section id="flows" aria-label="Game plan"></section>
+  <section id="progress" aria-label="Progress"></section>
+
+  <div class="tips workout-only">
+    <button class="finish" id="finish">Finish workout</button>
+    <p class="saved" id="saved" role="status"></p>
+    <p>One bell does everything here. When a set feels easy, add reps or slow the lowering down before you reach for a heavier bell.</p>
+    <p>Pick a weight where the last 2–3 reps are hard but your form stays clean. Go lighter for the first two weeks, especially on get-ups and presses.</p>
+    <p>Rest 60–90 seconds between sets. Swings and cleans are power work — end the set when the bell starts to slow down.</p>
+    <p>Keep lifting away from your hardest rolling days.</p>
+    <button class="reset" id="reset">Clear today’s sets</button>
+  </div>
+</main>
+
+<div class="timer workout-only">
+  <div class="in">
+    <div class="clock" id="clock">1:30</div>
+    <label for="clock">Rest timer</label>
+    <button class="tbtn ghost" data-sec="60">60s</button>
+    <button class="tbtn" data-sec="90">90s</button>
+  </div>
+</div>
+
+<script>
+const PLAN = {
+  day1: [
+    {name:"Two-hand swing", sets:5, reps:"15", why:"Hip power for bridging, sweeps and scrambles.", cue:"Hike the bell back past your hips, then snap your hips forward. Your arms stay relaxed — the bell floats, you don’t lift it."},
+    {name:"Goblet squat", sets:3, reps:"10", why:"Leg drive for standing up and passing.", cue:"Hold the horns at your chest. Sit down between your heels with your elbows inside your knees and your chest tall."},
+    {name:"Single-arm row", sets:3, reps:"10 / side", why:"Pulling strength for grips and guard.", cue:"Hinge until your back is flat. Pull the bell to your hip, not your chest, and don’t let your shoulders twist."},
+    {name:"Suitcase deadlift", sets:3, reps:"8 / side", why:"Hinge strength plus a core that resists being bent sideways.", cue:"Bell beside your foot. Stand up without letting your shoulders tilt toward it."},
+    {name:"Kettlebell clean", sets:3, reps:"6 / side", why:"Explosive pull — the same action as standing up in a scramble.", cue:"Same hike as a swing, then guide the bell around your fist into the rack. Punch through so it doesn’t bang your wrist."},
+    {name:"Suitcase carry", sets:3, reps:"40 steps", why:"Grip endurance and an anti-lean core, like carrying someone’s weight.", cue:"One bell, one side. Walk tall and level, and switch hands each set."},
+    {name:"Bottoms-up hold", sets:3, reps:"20 sec / side", why:"Crushing grip and shoulder stability.", cue:"Bell upside down in the rack, handle squeezed hard. Start lighter than you think."}
+  ],
+  day2: [
+    {name:"Turkish get-up", sets:3, reps:"2 / side", why:"Standing up with weight on you — bridges, hip escapes and posting in one lift.", cue:"Roll to your elbow, then your hand, sweep the leg through, lunge up. Eyes on the bell the whole way."},
+    {name:"Half-kneeling press", sets:3, reps:"8 / side", why:"Framing and posting strength overhead.", cue:"Back knee down, ribs down. Press straight up without arching your lower back."},
+    {name:"Kettlebell halo", sets:2, reps:"8 / side", why:"Shoulder and neck mobility for bridging and posture.", cue:"Circle the bell close around your head, slowly. Keep your ribs down and don’t lean away from it."},
+    {name:"Single-leg deadlift", sets:3, reps:"8 / side", why:"Base and balance when they attack the leg you’re standing on.", cue:"Hinge over the standing leg with your back leg straight behind you. Keep your hips square to the floor."},
+    {name:"Single-arm swing", sets:3, reps:"10 / side", why:"Hip power plus a grip that has to hold on.", cue:"Same as the two-hand swing. Let the handle rotate in your hand and keep your shoulder packed."},
+    {name:"Windmill", sets:2, reps:"5 / side", why:"Opens the hips and shoulders you use to escape.", cue:"Bell locked out overhead, eyes on it. Push your hip out and slide your free hand down the inside of your leg."},
+    {name:"Neck work", sets:2, reps:"10", why:"Helps prevent neck injuries.", cue:"Gentle neck bridges or light neck harness work. No kettlebell needed — start very light."}
+  ]
+};
+
+const KEY = "bjj-plan-v1";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { state = {}; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} };
+
+const VIEWS = ["day1", "day2", "flows", "progress"];
+const fromHash = () => VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "day1";
+let day = fromHash();
+const WORK_SUB = "Two kettlebell days a week, one bell. Watch each figure to see the movement (tap it to pause), and tap a circle when you finish a set.";
+const FLOW_SUB = "Your flowcharts from the mat. Pick a position to review before class.";
+const PROG_SUB = "Every finished workout is saved on this phone. Here’s how you’re trending.";
+
+/* Progress */
+const DAY_MS = 864e5;
+const fmtDate = t => new Date(t).toLocaleDateString(undefined, {month:"short", day:"numeric"});
+const weekStart = t => { const d = new Date(t); d.setHours(0,0,0,0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getTime(); };
+const weeksAgo = t => Math.round((weekStart(Date.now()) - weekStart(t)) / (7 * DAY_MS));
+const DAY_NAME = {day1:"Day 1", day2:"Day 2"};
+
+function weeklyChart(H){
+  const counts = Array(12).fill(0);
+  H.forEach(h => { const w = weeksAgo(h.t); if (w >= 0 && w < 12) counts[11 - w]++; });
+  const W = 320, Ht = 150, pl = 8, pr = 8, pt = 14, pb = 22;
+  const maxY = Math.max(3, ...counts), bw = (W - pl - pr) / 12;
+  const y = v => pt + (Ht - pt - pb) * (1 - v / maxY);
+  let s = `<line class="grid" x1="${pl}" x2="${W - pr}" y1="${y(0)}" y2="${y(0)}"/>`;
+  counts.forEach((c, i) => {
+    const x = pl + i * bw + 4, h = Math.max(c ? 0 : 3, y(0) - y(c));
+    s += `<rect class="bar${c ? "" : " zero"}" x="${x.toFixed(1)}" y="${(y(0) - h).toFixed(1)}" width="${(bw - 8).toFixed(1)}" height="${h.toFixed(1)}" rx="3"><title>${c} workout${c === 1 ? "" : "s"}</title></rect>`;
+  });
+  s += `<line class="goal" x1="${pl}" x2="${W - pr}" y1="${y(2)}" y2="${y(2)}"/><text class="gl" x="${W - pr}" y="${y(2) - 4}" text-anchor="end">Goal: 2 a week</text>`;
+  s += `<text x="${pl}" y="${Ht - 5}">${fmtDate(weekStart(Date.now()) - 11 * 7 * DAY_MS)}</text><text x="${W - pr}" y="${Ht - 5}" text-anchor="end">This week</text>`;
+  return {svg:`<svg class="pchart" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Workouts per week for the last 12 weeks">${s}</svg>`, counts};
+}
+
+function weightChart(pts){
+  const W = 320, Ht = 170, pl = 40, pr = 12, pt = 14, pb = 24;
+  const t0 = pts[0].t, t1 = pts[pts.length - 1].t;
+  let lo = Math.min(...pts.map(p => p.w)), hi = Math.max(...pts.map(p => p.w));
+  if (hi - lo < 10) { const m = (hi + lo) / 2; lo = m - 5; hi = m + 5; }
+  const x = t => t1 === t0 ? (pl + W - pr) / 2 : pl + (W - pl - pr) * (t - t0) / (t1 - t0);
+  const y = v => pt + (Ht - pt - pb) * (1 - (v - lo) / (hi - lo));
+  const r = v => Math.round(v * 10) / 10;
+  let s = `<line class="grid" x1="${pl}" x2="${W - pr}" y1="${y(hi)}" y2="${y(hi)}"/><line class="grid" x1="${pl}" x2="${W - pr}" y1="${y(lo)}" y2="${y(lo)}"/>`;
+  s += `<text x="${pl - 6}" y="${y(hi) + 4}" text-anchor="end">${r(hi)}</text><text x="${pl - 6}" y="${y(lo) + 4}" text-anchor="end">${r(lo)}</text>`;
+  s += `<polyline class="ln" points="${pts.map(p => x(p.t).toFixed(1) + "," + y(p.w).toFixed(1)).join(" ")}"/>`;
+  pts.forEach(p => s += `<circle class="pt" cx="${x(p.t).toFixed(1)}" cy="${y(p.w).toFixed(1)}" r="4"><title>${fmtDate(p.t)}: ${p.w} lbs</title></circle>`);
+  s += `<text x="${pl}" y="${Ht - 6}">${fmtDate(t0)}</text><text x="${W - pr}" y="${Ht - 6}" text-anchor="end">${fmtDate(t1)}</text>`;
+  return `<svg class="pchart" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Weight over time">${s}</svg>`;
+}
+
+function renderProgress(){
+  const box = document.getElementById("progress");
+  const H = (state.history || []).slice().sort((a, b) => a.t - b.t);
+  if (!H.length){
+    box.innerHTML = `<div class="pcard"><h2>No workouts logged yet</h2><p class="why">Check off your sets on Day 1 or Day 2, then tap “Finish workout” at the bottom. Each one you finish shows up here.</p></div>`;
+    return;
+  }
+  const wc = weeklyChart(H);
+  const thisWeek = wc.counts[11];
+  const span = Math.min(12, weeksAgo(H[0].t) + 1);
+  const hit = wc.counts.slice(12 - span).filter(c => c >= 2).length;
+
+  const names = [...PLAN.day1, ...PLAN.day2].map(e => e.name);
+  const series = n => H.flatMap(h => h.ex.filter(e => e.n === n && e.w != null).map(e => ({t:h.t, w:e.w})));
+  if (!names.includes(state.progEx)) state.progEx = names.find(n => series(n).length) || names[0];
+  const pts = series(state.progEx);
+  let trend;
+  if (pts.length >= 2){
+    const d = Math.round((pts[pts.length - 1].w - pts[0].w) * 10) / 10;
+    trend = `<p class="why"><span class="change">${d > 0 ? "+" : ""}${d} lbs</span> since ${fmtDate(pts[0].t)} (${pts[0].w} → ${pts[pts.length - 1].w} lbs)</p>` + weightChart(pts);
+  } else {
+    trend = `<p class="why">${pts.length ? `Logged once at ${pts[0].w} lbs. Log it again with a weight to see a trend.` : "No weights logged for this one yet. Enter a weight before you finish a workout."}</p>`;
+  }
+
+  const recent = H.slice().reverse().slice(0, 15);
+  box.innerHTML = `
+    <div class="stats">
+      <div class="stat"><b>${H.length}</b><span>workouts logged</span></div>
+      <div class="stat"><b>${thisWeek}<small style="font-size:1rem">/2</small></b><span>this week</span></div>
+      <div class="stat"><b>${hit}<small style="font-size:1rem">/${span}</small></b><span>weeks you hit 2</span></div>
+    </div>
+    <div class="pcard"><h2>Workouts per week</h2><p class="why">Last 12 weeks</p>${wc.svg}</div>
+    <div class="pcard"><h2>Weight trend</h2>
+      <select id="progEx" aria-label="Exercise">${names.map(n => `<option ${n === state.progEx ? "selected" : ""}>${n}</option>`).join("")}</select>
+      ${trend}
+    </div>
+    <div class="pcard"><h2>Recent workouts</h2>
+      <ul class="log">${recent.map(h => {
+        const done = h.ex.reduce((a, e) => a + e.d, 0), of = h.ex.reduce((a, e) => a + e.of, 0);
+        return `<li><span class="when">${fmtDate(h.t)}</span><span class="what">${DAY_NAME[h.day] || h.day}, ${done} of ${of} sets</span><button data-t="${h.t}">Remove</button></li>`;
+      }).join("")}</ul>
+    </div>`;
+  box.querySelector("#progEx").onchange = e => { state.progEx = e.target.value; save(); renderProgress(); };
+  box.querySelectorAll(".log button").forEach(b => b.onclick = () => {
+    if (!b.classList.contains("armed")){ b.classList.add("armed"); b.textContent = "Tap to confirm"; return; }
+    state.history = state.history.filter(h => String(h.t) !== b.dataset.t);
+    save(); renderProgress();
+  });
+}
+
+/* Game plan data: [kind, text], kind = start | act | key | dec | result */
+const FLOWS = [
+  {id:"sc-top", pick:"Side control: top", title:"Side control", sub:"Top", start:"Top", branches:[
+    [["act","Double underhooks"],["key","Flat (both shoulders down on the mat)"],["result","Upgrade position (chest to chest, mount)"]],
+    [["act","Rotate (pull to your chest to expose the back)"],["key","Back exposure"],["result","Upgrade position (chest to chest, back control)"]]
+  ]},
+  {id:"sc-subs", pick:"Side control: subs", title:"Side control submissions", sub:"Top", start:"Top", branches:[
+    [["act","Pin wrist"],["dec","Player 2’s hand direction"],{fork:[{q:"Head?",to:"Americana",tone:"a"},{q:"Feet?",to:"Kimura",tone:"b"},{q:"Out?",to:"Arm bar",tone:"c"}]}],
+    [["act","Under hook"],["key","Rotate (around player 2’s head)"],["result","Arm bar"]]
+  ]},
+  {id:"sc-def", pick:"Side control: defense", title:"Side control defense", sub:"Bottom", start:"Bottom", branches:[
+    [["act","Frames (hips & jaw)"],["key","Bring elbow to knees"],["result","Guard"]],
+    [["act","Under hook under elbow"],["key","Base (elbow down, get to knees)"],{check:["Head and/or hip height higher than player 2","I build a base (structure) while taking away player 2’s base"], yes:"Sweep (to become top player)", no:"Guard"}]
+  ]},
+  {id:"half", pick:"Top half guard", title:"Top half guard", sub:"Passing the knee shield", start:"Knee shield", via:"Get past knee", branches:[
+    [["act","Knees apart"],["key","Pin chest to chest"],["key","Free out leg"]],
+    [["act","Knees together"],["key","Head control"],["key","Circle around head"]]
+  ]},
+  {id:"rdlr", pick:"Reverse De La Riva", title:"Reverse De La Riva", sub:"Standing passer vs belly-up player", start:"Reverse De La Riva (ankle grip & knee to knee)", via:"Hook for leg", branches:[
+    [["act","Push / pull (space)"],["key","X guard"],["key","Move leg over head"],["key","Grab double ankle grip"],["key","Take back, chest to back"]]
+  ]}
+];
+
+const nodeHTML = (kind, text, extra = "") => `<div class="node n-${kind} ${extra}">${text}</div>`;
+function stepHTML(s, laneId){
+  if (s.fork) return `<div class="step"><div class="fork">${s.fork.map(o =>
+    `<div class="opt t-${o.tone}">${nodeHTML("key", o.q)}<span aria-hidden="true">→</span>${nodeHTML("key", o.to)}</div>`).join("")}</div></div>`;
+  if (s.check){
+    const ck = (state.checks && state.checks[laneId]) || [];
+    const all = s.check.every((_, i) => ck.includes(i));
+    return `<div class="step"><div class="checks"><span class="if">If</span>${s.check.map((c, i) =>
+      `<label><input type="checkbox" data-lane="${laneId}" data-i="${i}" ${ck.includes(i) ? "checked" : ""}><span>${c}</span></label>`).join("")}</div></div>
+      <div class="step"><div class="outs">${nodeHTML("act", s.yes, all ? "" : "dim")}<small>${all ? "Both true: go for the sweep" : "Not both yet: recover guard"}</small>${nodeHTML("result", s.no, all ? "dim" : "")}</div></div>`;
+  }
+  return `<div class="step">${nodeHTML(s[0], s[1])}</div>`;
+}
+function renderFlows(){
+  const box = document.getElementById("flows");
+  const cur = FLOWS.find(f => f.id === state.flow) || FLOWS[0];
+  box.innerHTML = `
+    <div class="picker" role="tablist" aria-label="Positions">${FLOWS.map(f =>
+      `<button class="pick" role="tab" aria-selected="${f === cur}" data-f="${f.id}">${f.pick}</button>`).join("")}</div>
+    <div class="legend">
+      <span><i style="background:var(--go);border-radius:6px"></i>Position or goal</span>
+      <span><i style="background:var(--act);border-radius:2px"></i>Your move</span>
+      <span><i style="background:var(--key);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)"></i>Key detail</span>
+      <span><i style="background:var(--dec);clip-path:polygon(0 0,100% 0,100% 65%,50% 100%,0 65%)"></i>Read their reaction</span>
+    </div>
+    <article class="chart">
+      <h2>${cur.title}</h2><p class="why">${cur.sub}</p>
+      <div class="flow">
+        <div class="step">${nodeHTML("start", cur.start)}</div>
+        ${cur.via ? `<div class="via">${cur.via}</div>` : ""}
+        <div class="branches b${cur.branches.length}">${cur.branches.map((lane, bi) =>
+          `<div class="lane">${lane.map(s => stepHTML(s, cur.id + "-" + bi)).join("")}</div>`).join("")}</div>
+      </div>
+    </article>`;
+  box.querySelectorAll(".pick").forEach(b => b.onclick = () => { state.flow = b.dataset.f; save(); renderFlows(); });
+  box.querySelectorAll(".checks input").forEach(c => c.onchange = () => {
+    state.checks = state.checks || {};
+    const arr = state.checks[c.dataset.lane] || (state.checks[c.dataset.lane] = []);
+    const i = +c.dataset.i, at = arr.indexOf(i);
+    if (c.checked && at < 0) arr.push(i); else if (!c.checked && at > -1) arr.splice(at, 1);
+    save(); renderFlows();
+  });
+}
+
+function render(){
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.day === day));
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  figs.length = 0;
+  document.body.classList.toggle("flows", day === "flows");
+  document.body.classList.toggle("progress", day === "progress");
+  document.getElementById("sub").textContent = day === "flows" ? FLOW_SUB : day === "progress" ? PROG_SUB : WORK_SUB;
+  if (day === "flows") { renderFlows(); return; }
+  if (day === "progress") { renderProgress(); return; }
+  PLAN[day].forEach((ex, i) => {
+    const id = day + "-" + i;
+    const s = state[id] || (state[id] = {done:[], w:""});
+    const el = document.createElement("article");
+    el.className = "ex" + (s.done.length >= ex.sets ? " complete" : "");
+    const q = encodeURIComponent(ex.name + " exercise form");
+    el.innerHTML = `
+      <div class="top">
+        <svg class="fig" viewBox="0 0 200 180" role="img" aria-label="Animated figure showing the ${ex.name} movement. Tap to pause or play."><g></g></svg>
+        <div><div class="exhead"><h2>${ex.name}</h2><span class="rx">${ex.sets} × ${ex.reps}</span></div>
+        <p class="why">${ex.why}</p></div>
+      </div>
+      <div class="sets"></div>
+      <details><summary>Form tips</summary><p>${ex.cue}</p>
+        <a class="how" href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener">See pictures of this exercise</a></details>`;
+    const sets = el.querySelector(".sets");
+    for (let n = 0; n < ex.sets; n++){
+      const b = document.createElement("button");
+      b.className = "set" + (s.done.includes(n) ? " on" : "");
+      b.textContent = n + 1;
+      b.setAttribute("aria-label", `${ex.name} set ${n+1}`);
+      b.setAttribute("aria-pressed", s.done.includes(n));
+      b.onclick = () => {
+        const k = s.done.indexOf(n);
+        if (k > -1) s.done.splice(k, 1); else { s.done.push(n); startTimer(lastRest); }
+        save(); render();
+      };
+      sets.appendChild(b);
+    }
+    const w = document.createElement("label");
+    w.className = "weight";
+    w.innerHTML = `Weight <input inputmode="decimal" placeholder="lbs">`;
+    const inp = w.querySelector("input");
+    inp.value = s.w;
+    inp.oninput = () => { s.w = inp.value; save(); };
+    sets.appendChild(w);
+    list.appendChild(el);
+    const f = {svg: el.querySelector(".fig"), key: ex.name};
+    f.svg.addEventListener("click", () => { toggled.has(f.key) ? toggled.delete(f.key) : toggled.add(f.key); });
+    figs.push(f);
+    drawFig(f, 0);
+  });
+  updateBelt();
+}
+
+function updateBelt(){
+  let total = 0, done = 0;
+  PLAN[day].forEach((ex, i) => { total += ex.sets; done += Math.min((state[day+"-"+i]?.done.length)||0, ex.sets); });
+  const pct = total ? done / total : 0;
+  document.getElementById("fill").style.width = `calc((100% - 132px) * ${pct})`;
+  document.getElementById("count").textContent = pct === 1 ? `Session done: all ${total} sets. Nice work.` : `${done} of ${total} sets today`;
+  paintBelt();
+}
+
+/* Your real belt rank */
+const BELTS = {
+  white:{name:"White", c:"#F4F4F2", bar:"#000", stitch:"#1A1D21"},
+  blue:{name:"Blue", c:"#1F5FBF", bar:"#000", stitch:"#FFFFFF"},
+  purple:{name:"Purple", c:"#6B3FA0", bar:"#000", stitch:"#FFFFFF"},
+  brown:{name:"Brown", c:"#6B4423", bar:"#000", stitch:"#FFFFFF"},
+  black:{name:"Black", c:"#111111", bar:"#C8102E", stitch:"#FFFFFF"}
+};
+if (!state.rank || !BELTS[state.rank.belt]) state.rank = {belt:"white", stripes:1};
+function paintBelt(){
+  const r = state.rank, b = BELTS[r.belt], el = document.getElementById("belt");
+  el.style.setProperty("--beltc", b.c);
+  el.style.setProperty("--barc", b.bar);
+  el.style.setProperty("--stitch", b.stitch);
+  el.setAttribute("aria-label", `${b.name} belt, ${r.stripes} stripe${r.stripes === 1 ? "" : "s"}`);
+  el.querySelectorAll(".stripe").forEach((s, i) => s.classList.toggle("on", i < r.stripes));
+  document.getElementById("snum").textContent = r.stripes;
+  document.getElementById("sminus").disabled = r.stripes <= 0;
+  document.getElementById("splus").disabled = r.stripes >= 4;
+  document.getElementById("beltcolors").innerHTML = Object.entries(BELTS).map(([k, v]) =>
+    `<button class="bc" data-belt="${k}" aria-pressed="${k === r.belt}"><i style="background:${v.c}"></i>${v.name}</button>`).join("");
+  document.querySelectorAll(".bc").forEach(btn => btn.onclick = () => { state.rank.belt = btn.dataset.belt; save(); paintBelt(); });
+}
+document.getElementById("beltedit").onclick = e => {
+  const p = document.getElementById("beltpanel"), open = p.hidden;
+  p.hidden = !open; e.target.setAttribute("aria-expanded", open); e.target.textContent = open ? "Done" : "Edit belt";
+};
+document.getElementById("sminus").onclick = () => { state.rank.stripes = Math.max(0, state.rank.stripes - 1); save(); paintBelt(); };
+document.getElementById("splus").onclick = () => { state.rank.stripes = Math.min(4, state.rank.stripes + 1); save(); paintBelt(); };
+
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => { day = t.dataset.day; location.hash = day; render(); });
+window.addEventListener("hashchange", () => { day = fromHash(); render(); });
+document.getElementById("finish").onclick = () => {
+  const msg = document.getElementById("saved");
+  const ex = PLAN[day].map((e, i) => {
+    const s = state[day + "-" + i] || {done:[], w:""};
+    const d = Math.min(s.done.length, e.sets), w = parseFloat(s.w);
+    return {n:e.name, d, of:e.sets, w: d && !isNaN(w) ? w : null};
+  });
+  const done = ex.reduce((a, e) => a + e.d, 0);
+  if (!done){ msg.textContent = "Check off at least one set before finishing."; return; }
+  state.history = state.history || [];
+  state.history.push({t:Date.now(), day, ex});
+  PLAN[day].forEach((e, i) => { const s = state[day + "-" + i]; if (s) s.done = []; });
+  save(); render();
+  msg.textContent = `Saved: ${done} sets logged. See it in Progress.`;
+};
+document.getElementById("reset").onclick = () => {
+  PLAN[day].forEach((ex, i) => { const s = state[day+"-"+i]; if (s) s.done = []; });
+  save(); render();
+};
+
+/* Rest timer */
+let lastRest = 90, endAt = 0, tick = null;
+const clock = document.getElementById("clock");
+const fmt = s => Math.floor(s/60) + ":" + String(s%60).padStart(2,"0");
+function startTimer(sec){
+  lastRest = sec; endAt = Date.now() + sec*1000;
+  clearInterval(tick); clock.classList.remove("zero");
+  const step = () => {
+    const left = Math.max(0, Math.round((endAt - Date.now())/1000));
+    clock.textContent = fmt(left);
+    if (left === 0){ clearInterval(tick); clock.classList.add("zero"); if (navigator.vibrate) navigator.vibrate(300); }
+  };
+  step(); tick = setInterval(step, 250);
+}
+document.querySelectorAll(".tbtn").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tbtn").forEach(x => x.classList.add("ghost"));
+  b.classList.remove("ghost");
+  startTimer(+b.dataset.sec);
+});
+
+/* Movement animations */
+const figs = [];
+const toggled = new Set();
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const isPaused = name => reduceMotion !== toggled.has(name);
+const rad = a => a * Math.PI / 180;
+const P = (p, a, l) => [p[0] + Math.sin(rad(a)) * l, p[1] + Math.cos(rad(a)) * l];
+const f1 = n => n.toFixed(1);
+const L = (a, b, c = "body") => `<line class="${c}" x1="${f1(a[0])}" y1="${f1(a[1])}" x2="${f1(b[0])}" y2="${f1(b[1])}"/>`;
+const C = (p, r, c) => `<circle class="${c}" cx="${f1(p[0])}" cy="${f1(p[1])}" r="${r}"/>`;
+const T = (x, y, s) => `<text class="note" x="${x}" y="${y}">${s}</text>`;
+const mix = (a, b, k) => a + (b - a) * k;
+const mixP = (a, b, k) => [mix(a[0], b[0], k), mix(a[1], b[1], k)];
+const floor = y => L([14, y], [186, y], "eq");
+const grip = J => C(J.hand, 5, "grip");
+
+/* A kettlebell hanging off point p, bell body in direction a (0 = straight down) */
+const dirOf = (a, b) => Math.atan2(b[0] - a[0], b[1] - a[1]) * 180 / Math.PI;
+function bell(p, a, s = 1){
+  const c = P(p, a, 15 * s), r = 9 * s, u = rad(a);
+  const n = [Math.cos(u) * r * 0.6, -Math.sin(u) * r * 0.6];
+  return L(p, [c[0] + n[0], c[1] + n[1]], "eq") + L(p, [c[0] - n[0], c[1] - n[1]], "eq") + C(c, r, "eqf");
+}
+/* bell carried in line with the forearm (swings, cleans) vs. hanging straight down (deadlifts, carries) */
+const held = J => bell(J.hand, dirOf(J.el, J.hand)) + grip(J);
+const hang = J => bell(J.hand, 0) + grip(J);
+/* the hinge → stand pair shared by both swing variations */
+const SWING = {
+  a:{hx:84, hy:108, t:135, ua:-30, fa:-26, th:14, sn:-16},
+  b:{hx:100, hy:106, t:180, ua:92, fa:92, th:2, sn:-2},
+  top: held
+};
+
+function joints(p){
+  const hip = [p.hx, p.hy];
+  const sh = P(hip, p.t, 50);
+  const head = P(sh, p.t + (p.nk || 0), 13);
+  const ua = p.rel ? p.t + p.ua : p.ua, fa = p.rel ? p.t + p.fa : p.fa;
+  const el = P(sh, ua, 28), hand = P(el, fa, 26);
+  const kn = P(hip, p.th, 34), foot = P(kn, p.sn, 32);
+  return {hip, sh, head, el, hand, kn, foot};
+}
+function pose(a, b0, k, lerp){
+  const b = Object.assign({}, a, b0);
+  if (lerp){ const A = joints(a), B = joints(b), J = {}; for (const n in A) J[n] = mixP(A[n], B[n], k); return J; }
+  const p = {}; for (const n in a) p[n] = typeof a[n] === "number" ? mix(a[n], b[n], k) : a[n];
+  return joints(p);
+}
+const person = J => L(J.foot, J.kn) + L(J.kn, J.hip) + L(J.hip, J.sh) + L(J.sh, J.el) + L(J.el, J.hand) + C(J.head, 10, "head");
+
+const ANIMS = {
+  /* Day 1 */
+  "Two-hand swing": Object.assign({}, SWING, {
+    eq: () => floor(172) + T(8,22,"Both hands on the handle") }),
+  "Goblet squat": { lerp:true,
+    a:{hx:100,hy:106,t:180,ua:0,fa:160,th:2,sn:-2}, b:{hx:92,hy:132,t:160,th:75,sn:-5},
+    eq: () => floor(172), top: J => bell(J.hand, 0, 0.95) + grip(J) },
+  "Single-arm row": { lerp:true,
+    a:{hx:84,hy:107,t:130,ua:5,fa:5,th:10,sn:-10}, b:{ua:-50,fa:60},
+    eq: () => floor(172), top: hang },
+  "Suitcase deadlift": { lerp:true,
+    a:{hx:100,hy:106,t:180,ua:0,fa:0,th:2,sn:-2}, b:{hx:88,hy:115,t:135,th:30,sn:-30},
+    eq: () => floor(172), top: hang },
+  "Kettlebell clean": {
+    a:{hx:84,hy:108,t:135,ua:-30,fa:-26,th:14,sn:-16}, b:{hx:100,hy:106,t:180,ua:5,fa:176,th:2,sn:-2},
+    eq: () => floor(172),
+    top: (J,k) => bell(J.hand, mix(-26,250,k), 0.95) + grip(J) },
+  "Suitcase carry": {
+    a:{hx:100,hy:108,t:178,ua:0,fa:0,th:28,sn:-26}, b:{th:-20,sn:-8},
+    eq: () => floor(172), top: hang },
+  "Bottoms-up hold": {
+    a:{hx:100,hy:106,t:180,ua:8,fa:172,th:2,sn:-2}, b:{fa:188},
+    eq: () => floor(172) + T(8,22,"Handle upright, squeeze hard"),
+    top: (J,k) => bell(J.hand, mix(174,186,k), 0.95) + grip(J) },
+
+  /* Day 2 */
+  "Turkish get-up": { lerp:true,
+    a:{hx:100,hy:158,t:90,ua:180,fa:180,th:268,sn:272}, b:{hy:160,t:140,th:225,sn:5},
+    eq: () => floor(172) + T(8,22,"Eyes on the bell"),
+    top: J => bell(J.hand, 180) + grip(J) },
+  "Half-kneeling press": {
+    a:{hx:94,hy:140,t:180,ua:5,fa:174,th:90,sn:0}, b:{ua:180,fa:180},
+    eq: J => L(J.hip,[80,168]) + L([80,168],[62,170]) + floor(172) + T(8,22,"Back knee down"),
+    top: (J,k) => bell(J.hand, mix(215,180,k), 0.95) + grip(J) },
+  "Kettlebell halo": { draw: k => {
+    const cx = 100, cy = 60, R = 28, a = k * 360;
+    const h = [cx + Math.sin(rad(a)) * R, cy - Math.cos(rad(a)) * R];
+    const sL = [82,86], sR = [118,86];
+    return floor(172) + L([90,112],[84,144]) + L([84,144],[80,172]) + L([110,112],[116,144]) + L([116,144],[120,172])
+      + L([90,112],[110,112]) + L([100,112],[100,86]) + L(sL,sR) + L(sL,h) + L(sR,h)
+      + C([cx,cy],12,"head") + bell(h, 180 - a, 0.85) + C(h,5,"grip") + T(6,166,"Front view"); } },
+  "Single-leg deadlift": {
+    a:{hx:100,hy:106,t:178,ua:0,fa:0,th:2,sn:-2}, b:{hx:92,t:120,th:8,sn:-8},
+    eq: (J,k) => { const kn2 = P(J.hip, mix(355,255,k), 34), ft2 = P(kn2, mix(5,250,k), 32);
+      return floor(172) + L(J.hip,kn2) + L(kn2,ft2); },
+    top: hang },
+  "Single-arm swing": Object.assign({}, SWING, { eq: () => floor(172) }),
+  "Windmill": { draw: k => {
+    const lean = rad(mix(2, 42, k)), S = [100 - Math.sin(lean) * 42, 120 - Math.cos(lean) * 42];
+    const perp = [Math.cos(lean) * 18, -Math.sin(lean) * 18];
+    const sR = [S[0] + perp[0], S[1] + perp[1]], sL = [S[0] - perp[0], S[1] - perp[1]];
+    const hi = [sR[0] + 2, sR[1] - 44];
+    const lo = [mix(sL[0] - 6, 74, k), mix(sL[1] + 54, 164, k)];
+    const head = [S[0] - Math.sin(lean) * 15, S[1] - Math.cos(lean) * 15];
+    return floor(172) + L([92,120],[76,172]) + L([108,120],[126,172]) + L([92,120],[108,120])
+      + L([100,120],S) + L(sL,sR) + L(sR,hi) + L(sL,lo)
+      + C(head,11,"head") + bell(hi,180,0.95) + C(hi,5,"grip") + T(6,24,"Front view"); } },
+  "Neck work": {
+    a:{hx:96,hy:118,t:180,ua:30,fa:125,th:90,sn:0,nk:-28}, b:{nk:22},
+    eq: () => L([70,128],[124,128],"pad") + L([78,132],[78,151],"eq") + L([116,132],[116,151],"eq") + floor(151) + T(8,22,"Slow, gentle nods") }
+};
+
+function drawFig(f, k){
+  const A = ANIMS[f.key]; if (!A) return;
+  let s;
+  if (A.draw) s = A.draw(k);
+  else { const J = pose(A.a, A.b, k, A.lerp); s = (A.eq ? A.eq(J, k) : "") + person(J) + (A.top ? A.top(J, k) : ""); }
+  f.svg.querySelector("g").innerHTML = s;
+}
+function loop(t){
+  const c = (t / 3000) % 1, k = (1 - Math.cos(c * 2 * Math.PI)) / 2;
+  figs.forEach(f => { if (!isPaused(f.key)) drawFig(f, k); });
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+render();
+
+/* Offline support. Both of these no-op on file:// and on browsers that don't
+   support them, so the app still works when opened as a plain local file. */
+if ("serviceWorker" in navigator){
+  addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+/* Ask the browser not to evict the workout history if storage gets tight. */
+if (navigator.storage && navigator.storage.persist){
+  navigator.storage.persisted().then(p => { if (!p) navigator.storage.persist(); }).catch(() => {});
+}
+</script>
+</body>
+</html>

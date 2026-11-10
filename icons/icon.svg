@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#2E5E8C"/>
+  <!-- scaled to sit inside the 80% safe circle Android uses for maskable icons -->
+  <g transform="translate(256,256) scale(0.88) translate(-256,-256)">
+    <!-- handle: a filled arch whose feet flare out to the ball's shoulders -->
+    <path d="M170 250 C 170 120, 190 60, 256 60 C 322 60, 342 120, 342 250
+             L318 250 C 318 135, 298 104, 256 104 C 214 104, 194 135, 194 250 Z" fill="#FFFFFF"/>
+    <!-- the ball, with a base flush to its lowest point so the bottom reads flat -->
+    <circle cx="256" cy="310" r="130" fill="#FFFFFF"/>
+    <rect x="190" y="412" width="132" height="28" rx="10" fill="#FFFFFF"/>
+    <!-- rank bar, same red the belt header uses -->
+    <rect x="196" y="300" width="120" height="24" rx="8" fill="#C8102E"/>
+  </g>
+</svg>
